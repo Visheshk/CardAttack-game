@@ -10,4 +10,6 @@ public static class GameVariables
     public static int INITIAL_HITPOINTS = 20;
     public static int NORMAL_DAMAGE = 1;
     public static int FINISHER_DAMAGE = 3;
+    public static int SYMBOL_TYPES = 3;
+    public static int NUMBER_OF_COMBOS = 3;
 }
