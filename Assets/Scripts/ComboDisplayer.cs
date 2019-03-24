@@ -29,7 +29,7 @@ public class ComboDisplayer : MonoBehaviour
         for (int i = 0; i < thisCombo.getLength(); i++) {
             // Debug.Log(thisCombo.getSymbol(i));
             // Debug.Log( (int) thisCombo.getSymbol(i));
-            symbols[i].GetComponent<UnityEngine.UI.Image>().sprite = symbolImages[((int) thisCombo.getSymbol(i) - 1)];
+            symbols[i].GetComponent<SymbolDisplayer>().SetImage((int) thisCombo.getSymbol(i) - 1);
         }
     }
 
