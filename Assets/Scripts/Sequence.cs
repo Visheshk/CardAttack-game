@@ -9,8 +9,16 @@ public class Sequence : IEnumerable {
         this.sequence = new List<Symbol>();
     }
 
+    public Sequence(List<Symbol> sequence) {
+        this.sequence = sequence;
+    }
+
     public void addSymbol(Symbol s) {
         this.sequence.Add(s);
+    }
+
+    public List<Symbol> getSequence() {
+        return this.sequence;
     }
 
     public Symbol getSymbol(int index) {
