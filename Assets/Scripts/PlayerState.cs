@@ -27,7 +27,6 @@ public class PlayerState {
 
     public void addCombo(Sequence combo) {
         this.combos.Add(combo);
-        //should add check so that there are no duplicate combos
     }
 
     public void removeCombo(int index) {
