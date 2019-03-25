@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class ComboDisplayer : MonoBehaviour
 {   
-    [System.Serializable]
-    public struct symbolImage {
-        public string name;
-        public Sprite image;
-    }
-    public symbolImage[] symbolImagesDict;
+    // [System.Serializable]
+    // public struct symbolImage {
+    //     public string name;
+    //     public Sprite image;
+    // }
+    // public symbolImage[] symbolImagesDict;
     public List<GameObject> symbols;
     // public Dictionary<String, Sprite> symbolImagesDict;
-    public List<Sprite> symbolImages;
+    // public List<Sprite> symbolImages;
 
     public Sequence thisCombo;
     // public GameObject symbol1;
