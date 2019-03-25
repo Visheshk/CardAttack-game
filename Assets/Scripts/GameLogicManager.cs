@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameLogicManager : MonoBehaviour
 {
 
     private GameState game;
 
     void Start()
     {
-        
+        game = ScriptableObject.CreateInstance(typeof(GameState)) as GameState;
     }
 
     void Update()
     {
-        //Get input
+        
         //Calculate next game state
         //Update UI to gamestate
     }

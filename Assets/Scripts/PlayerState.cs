@@ -27,13 +27,11 @@ public class PlayerState {
 
     public void addCombo(Sequence combo) {
         this.combos.Add(combo);
+        //should add check so that there are no duplicate combos
     }
 
-    public void removeCombo(int index) {
-        if (index >= this.combos.Count) {
-            return;
-        }
-        this.combos.RemoveAt(index);
+    public void removeCombo() {
+        this.combos.RemoveAt(combos.Count-1);
     }
 
     public Sequence getCombo(int index) {
