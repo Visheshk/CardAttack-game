@@ -1,6 +1,6 @@
 ﻿public enum Symbol {
-    NONE,
-    TYPE1,
-    TYPE2,
-    TYPE3
+    NONE = 0,
+    TYPE1 = 1,
+    TYPE2 = 2,
+    TYPE3 = 3
 }
