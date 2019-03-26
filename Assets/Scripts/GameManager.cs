@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 
     private static int padding = 10; // Padding of elements in pixels(?)
     private static int symbolLength = 100; // Size of symbol edge in pixels(?)
+    private bool gameRunning = false;
 
     [Header("Scene UI Elements")]
     [SerializeField]
@@ -47,17 +48,23 @@ public class GameManager : MonoBehaviour {
         this.timer = 0;
     }
 
+    public void ToggleGameState() {
+        Debug.Log("game started or paused");
+        this.gameRunning = !this.gameRunning;
+    }
     void Update() {
-        this.input.getInput();
-        this.timer += Time.deltaTime;
-        this.placeNextSymbols(this.input);
-        if (this.timer >= GameVariables.TIME_TO_ANSWER) {
-            this.game = GameState.nextState(this.game, this.input);
-            replaceGameState(this.game);
-            this.input.clear();
-            timer = 0;
+        if (this.gameRunning == true){
+            this.input.getInput();
+            this.timer += Time.deltaTime;
+            this.placeNextSymbols(this.input);
+            if (this.timer >= GameVariables.TIME_TO_ANSWER) {
+                this.game = GameState.nextState(this.game, this.input);
+                replaceGameState(this.game);
+                this.input.clear();
+                this.timer = 0;
+            }
+            this.placeTime(timer);
         }
-        this.placeTime(timer);
     }
 
     private void initializeUI() {
@@ -115,8 +122,8 @@ public class GameManager : MonoBehaviour {
     }
 
     private void replaceCurrentSequences(GameState state) {
-        this.player1 = replaceCurrentSequence(state.Player1State, this.player1);
-        this.player2 = replaceCurrentSequence(state.Player2State, this.player2);
+        // this.player1 = replaceCurrentSequence(state.Player1State, this.player1);
+        // this.player2 = replaceCurrentSequence(state.Player2State, this.player2);
     }
 
     private PlayerUI replaceCurrentSequence(PlayerState playerState, PlayerUI player) {
