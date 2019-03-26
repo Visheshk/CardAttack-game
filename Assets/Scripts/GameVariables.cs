@@ -6,8 +6,7 @@ public static class GameVariables
 {
     public static int TIME_TO_ANSWER = 5;
     public static int SEQUENCE_LENGTH = 5;
-    public static int MIN_COMBO_LENGTH = 3;
-    public static int MAX_COMBO_LENGTH = 3;
+    public static int COMBO_LENGTH = 3;
     public static int INITIAL_HITPOINTS = 20;
     public static int NORMAL_DAMAGE = 1;
     public static int FINISHER_DAMAGE = 3;
