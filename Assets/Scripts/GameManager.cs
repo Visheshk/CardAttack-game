@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 
     private static int padding = 10; // Padding of elements in pixels(?)
     private static int symbolLength = 100; // Size of symbol edge in pixels(?)
+    private bool gameRunning = false;
 
     [Header("Scene UI Elements")]
     [SerializeField]
@@ -52,6 +53,10 @@ public class GameManager : MonoBehaviour {
         this.timer = 0;
     }
 
+    public void ToggleGameState() {
+        Debug.Log("game started or paused");
+        this.gameRunning = !this.gameRunning;
+    }
     void Update() {
         this.input.getInput();
         this.timer += Time.deltaTime;
@@ -73,7 +78,6 @@ public class GameManager : MonoBehaviour {
             this.input.clear();
             timer = 0;
         }
-        this.placeTime(timer);
     }
 
     private void initializeUI() {
