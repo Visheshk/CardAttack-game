@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     public PlayerUI player2;
     public GameObject statusText;
+    public GameObject winCanvas;
+    public GameObject gameCanvas;
+    public GameObject p1WinText;
+    public GameObject p2WinText;
 
     [Header("Prefab UI Elements")]
     public GameObject comboPanel;
@@ -25,6 +29,7 @@ public class GameManager : MonoBehaviour {
     public struct PlayerUI {
         public GameObject nameText;
         public GameObject hitpointsText;
+        public GameObject roleText;
         public GameObject comboArea;
         public GameObject nextSymbolArea;
         public GameObject currentSequenceArea;
@@ -53,17 +58,25 @@ public class GameManager : MonoBehaviour {
         this.gameRunning = !this.gameRunning;
     }
     void Update() {
-        if (this.gameRunning == true){
-            this.input.getInput();
-            this.timer += Time.deltaTime;
-            this.placeNextSymbols(this.input);
-            if (this.timer >= GameVariables.TIME_TO_ANSWER) {
-                this.game = GameState.nextState(this.game, this.input);
-                replaceGameState(this.game);
-                this.input.clear();
-                this.timer = 0;
+        this.input.getInput();
+        this.timer += Time.deltaTime;
+        this.placeNextSymbols(this.input);
+        if (this.timer >= GameVariables.TIME_TO_ANSWER) {
+            this.game = GameState.nextState(this.game, this.input);
+            replaceGameState(this.game);
+            if (this.game.isWon() != 0) {
+                this.winCanvas.SetActive(true);
+                if (this.game.isWon() == -1) {
+                    this.p1WinText.SetActive(true);
+                } else {
+                    this.p2WinText.SetActive(true);
+                }
+                this.gameCanvas.SetActive(false);
+                this.game = new GameState();
+                this.enabled = false;
             }
-            this.placeTime(timer);
+            this.input.clear();
+            timer = 0;
         }
     }
 
@@ -104,7 +117,37 @@ public class GameManager : MonoBehaviour {
     private void replaceGameState(GameState state) {
         replaceComboLists(state);
         replaceCurrentSequences(state);
-        // placeLastSequences(state);
+        replaceLastSequences(state);
+        replaceHitpoints(state);
+        replaceRole(state);
+    }
+
+    private void replaceRole(GameState state) {
+        this.player1.roleText = placeText(this.player1.roleText, state.Player1State.CurrRole.ToString());
+        this.player2.roleText = placeText(this.player2.roleText, state.Player2State.CurrRole.ToString());
+    }
+
+    private void replaceHitpoints(GameState state) {
+        this.player1.hitpointsText = placeText(this.player1.hitpointsText, state.Player1State.Hitpoints.ToString());
+        this.player2.hitpointsText = placeText(this.player2.hitpointsText, state.Player2State.Hitpoints.ToString());
+    }
+
+    private void replaceLastSequences(GameState state) {
+        this.player1.LastSequence = replaceLastSequence(state.Player1State.LastSequence, this.player1.LastSequence);
+        this.player2.LastSequence = replaceLastSequence(state.Player2State.LastSequence, this.player2.LastSequence);
+    }
+
+    private void replaceCurrentSequences(GameState state) {
+        this.player1.CurrentSequence = replaceCurrentSequence(state.Player1State.CurrSequence, this.player1.CurrentSequence);
+        this.player2.CurrentSequence = replaceCurrentSequence(state.Player2State.CurrSequence, this.player2.CurrentSequence);
+    }
+
+    private List<GameObject> replaceCurrentSequence(Sequence seq, List<GameObject> symbolObjects) {
+        return replaceSymbols(seq, symbolObjects);
+    }
+
+    private List<GameObject> replaceLastSequence(Sequence seq, List<GameObject> symbolObjects) {
+        return replaceSymbols(seq, symbolObjects);
     }
 
     private void replaceComboLists(GameState state) {
@@ -121,24 +164,14 @@ public class GameManager : MonoBehaviour {
         return player;
     }
 
-    private void replaceCurrentSequences(GameState state) {
-        // this.player1 = replaceCurrentSequence(state.Player1State, this.player1);
-        // this.player2 = replaceCurrentSequence(state.Player2State, this.player2);
-    }
-
-    private PlayerUI replaceCurrentSequence(PlayerState playerState, PlayerUI player) {
-        Sequence oldSequence = new Sequence(playerState.CurrSequence);
-        while (playerState.CurrSequence.Count != GameVariables.SEQUENCE_LENGTH) {
-            oldSequence.addSymbol(Symbol.NONE);
-        }
-        player.CurrentSequence = replaceSymbols(oldSequence, player.CurrentSequence);
-        return player;
-    }
-
     private List<GameObject> replaceSymbols(Sequence seq, List<GameObject> symbolObjects) {
         List<GameObject> newSymbolObjects = new List<GameObject>();
-        for (int i = 0; i < seq.Count; i++) {
-            newSymbolObjects.Add(replaceSymbol(symbolObjects[i], seq[i]));
+        for (int i = 0; i < symbolObjects.Count; i++) {
+            if (i < seq.Count) {
+                newSymbolObjects.Add(replaceSymbol(symbolObjects[i], seq[i]));
+            } else {
+                newSymbolObjects.Add(replaceSymbol(symbolObjects[i], Symbol.NONE));
+            }
         }
         return newSymbolObjects;
     }
@@ -175,16 +208,17 @@ public class GameManager : MonoBehaviour {
     }
 
     private static void initializeName(PlayerUI player, string name) {
-        placeText(player.nameText, name);
+        player.nameText = placeText(player.nameText, name);
     }
 
     private static void initializeHitpoints(PlayerUI player) {
-        placeText(player.hitpointsText, GameVariables.INITIAL_HITPOINTS.ToString());
+        player.hitpointsText = placeText(player.hitpointsText, GameVariables.INITIAL_HITPOINTS.ToString());
     }
 
-    private static void placeText(GameObject container, string s) {
+    private static GameObject placeText(GameObject container, string s) {
         Text text = container.GetComponent(typeof(Text)) as Text;
         text.text = s;
+        return container;
     }
 
     private List<GameObject> intitializeSymbols(int numSymbols, RectTransform pTransform) {

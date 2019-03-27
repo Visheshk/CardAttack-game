@@ -17,6 +17,9 @@ public class InputManager {
     }
 
     public void getInput() {
+        if (Input.GetButtonDown("Quit")) {
+            Application.Quit();
+        }
         if (Input.GetButtonDown("Player1 Button1")) {
             this.Player1Symbol = Symbol.TYPE1;
         } else if (Input.GetButtonDown("Player1 Button2")) {
