@@ -22,13 +22,6 @@ public class Sequence : IEnumerable {
         this.sequence.Add(s);
     }
 
-    public Symbol getSymbol(int index) {
-        if (index >= this.sequence.Count) {
-            return Symbol.NONE;
-        }
-        return this.sequence[index];
-    }
-
     // Returns the difference of two sequences, like a set difference A - B
     public static Sequence getDifference(Sequence seq1, Sequence seq2) {
         if (seq1 == null || seq2 == null || seq1.Count != seq2.Count) {
@@ -36,16 +29,17 @@ public class Sequence : IEnumerable {
         }
         Sequence newSeq = new Sequence();
         for (int i = 0; i < seq1.Count; i++) {
-            if (!seq1.getSymbol(i).Equals(seq2.getSymbol(i))) {
-                newSeq.addSymbol(seq1.getSymbol(i));
+            if (seq1[i] != seq2[i]) {
+                newSeq.addSymbol(seq1[i]);
             }
         }
         return newSeq;
     }
 
-    public static bool containsSubsequence(Sequence seq, Sequence subseq) {
+    public static int subsequenceOccurences(Sequence seq, Sequence subseq) {
+        int occurrences = 0;
         if (seq == null || subseq == null || subseq.Count > seq.Count) {
-            return false;
+            return 0;
         }
         for (int i = 0; i < seq.Count; i++) {
             if ((seq.Count - i) < subseq.Count) {
@@ -53,16 +47,16 @@ public class Sequence : IEnumerable {
             }
             bool contains = true;
             for (int j = 0; j < subseq.Count; j++) {
-                if (!seq.getSymbol(i+j).Equals(subseq.getSymbol(j))) {
+                if (seq[i+j] != subseq[j]) {
                     contains = false;
                     break;
                 }
             }
             if (contains == true) {
-                return true;
+                occurrences++;
             }
         }
-        return false;
+        return occurrences;
     }
 
     public IEnumerator GetEnumerator()

@@ -14,7 +14,7 @@ public class PlayerState {
         this.Hitpoints = GameVariables.INITIAL_HITPOINTS;
         this.Combos = new List<Sequence>();
         this.CurrSequence = new Sequence();
-        this.LastSequence = null;
+        this.LastSequence = new Sequence();
         this.CurrRole = Role.NONE;
     }
 
