@@ -92,3 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 967e5cca630133540ab28871ecefb91a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  symbolImages:
+  - {fileID: 21300000, guid: 85c872047831fda4ab4488f75a4734d2, type: 3}
+  - {fileID: 21300000, guid: bec563e0c802a814988e73b2be85ee3b, type: 3}
+  - {fileID: 21300000, guid: c2dff135d62018640b324e10ed4bfe94, type: 3}

@@ -22,6 +22,14 @@ public class Sequence : IEnumerable {
         this.sequence.Add(s);
     }
 
+    public Symbol getSymbol(int index) {
+        return this.sequence[index];
+    }
+
+    // public int getLength() {
+    //     return this.sequence.Count;
+    // }
+
     // Returns the difference of two sequences, like a set difference A - B
     public static Sequence getDifference(Sequence seq1, Sequence seq2) {
         if (seq1 == null || seq2 == null || seq1.Count != seq2.Count) {

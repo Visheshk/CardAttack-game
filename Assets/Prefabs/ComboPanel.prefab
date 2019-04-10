@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5988765222647921006}
   - component: {fileID: 7233676880447153630}
   - component: {fileID: 4494169897402207769}
+  - component: {fileID: 787667987716513193}
   m_Layer: 5
   m_Name: ComboPanel
   m_TagString: Untagged
@@ -74,3 +75,15 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &787667987716513193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5357788525693666563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1933271de7bf84d8abffe6a4e546b0f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
