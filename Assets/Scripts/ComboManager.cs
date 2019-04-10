@@ -17,7 +17,7 @@ public class ComboManager : MonoBehaviour
         thisCombo = combo;
         for (int i = 0; i < thisCombo.Count; i++) {
             // Debug.Log(i);
-            Debug.Log((int) thisCombo.getSymbol(i));
+            // Debug.Log((int) thisCombo.getSymbol(i));
             symbols[i].GetComponent<SymbolManager>().SetImage((int) thisCombo.getSymbol(i) - 1);
         }
     }

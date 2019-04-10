@@ -20,7 +20,7 @@ public class PlayerManager : MonoBehaviour
         foreach (GameObject cPanel in comboPanels){
             newcombo = new Sequence();
             for (int i = 0; i < GameVariables.COMBO_LENGTH; i++) {
-                Debug.Log(Random.Range(1, (GameVariables.SYMBOL_TYPES + 1)));
+                // Debug.Log(Random.Range(1, (GameVariables.SYMBOL_TYPES + 1)));
                 
                 newcombo.addSymbol((Symbol)Random.Range(1, (GameVariables.SYMBOL_TYPES + 1)));
             }
