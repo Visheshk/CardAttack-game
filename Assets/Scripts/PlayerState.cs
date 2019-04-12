@@ -10,8 +10,8 @@ public class PlayerState {
     public Sequence LastSequence {get; set;}
     public Role CurrRole {get; set;}
 
-    public PlayerState() {
-        this.Hitpoints = GameVariables.INITIAL_HITPOINTS;
+    public PlayerState(int hitpoints) {
+        this.Hitpoints = hitpoints;
         this.Combos = new List<Sequence>();
         this.CurrSequence = new Sequence();
         this.LastSequence = new Sequence();
