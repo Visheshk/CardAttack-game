@@ -8,10 +8,12 @@ public class ComboDeck
     private List<Sequence> currStack;
     private List<Sequence> usedStack;
     private static System.Random random = new System.Random();
+    private int comboLength;
 
-    public ComboDeck() {
-        this.currStack = generateDeck();
+    public ComboDeck(int comboLength) {
+        this.comboLength = comboLength;
         this.usedStack = new List<Sequence>();
+        this.currStack = generateDeck();
         shuffle();
     }
 
@@ -47,7 +49,7 @@ public class ComboDeck
         foreach (Symbol s in symbols) {
             Sequence newBuiltCombo = new Sequence(builtCombo);
             newBuiltCombo.addSymbol(s);
-            if (newBuiltCombo.Count >= GameVariables.COMBO_LENGTH) {
+            if (newBuiltCombo.Count >= comboLength) {
                 newCombos.Add(newBuiltCombo);
             }
             else {

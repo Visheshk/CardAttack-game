@@ -8,17 +8,20 @@ public class GameState {
     public PlayerState Player1State {get;}
     public PlayerState Player2State {get;}
 
-    public GameState() {
-        this.Deck = new ComboDeck();
+    private GameVariables variables;
+
+    public GameState(GameVariables variables) {
+        this.variables = variables;
+        this.Deck = new ComboDeck(this.variables.ComboLength);
         // Players instanced, HP set to initial starting HP.
-        this.Player1State = new PlayerState();
-        this.Player2State = new PlayerState();
+        this.Player1State = new PlayerState(variables.InitialHitpoints);
+        this.Player2State = new PlayerState(variables.InitialHitpoints);
 
         Player1State.CurrRole = random.Next(0,2) == 0 ? Role.ATTACKER : Role.DEFENDER;
         Player2State.CurrRole = Player1State.CurrRole == Role.ATTACKER ? Role.DEFENDER : Role.ATTACKER;
 
         // Players recieve starting number of combos.
-        for (int i = 0; i < GameVariables.NUM_COMBOS; i++) {
+        for (int i = 0; i < variables.NumCombos; i++) {
             this.Player1State.addCombo(this.Deck.drawCombo());
             this.Player2State.addCombo(this.Deck.drawCombo());
         }
@@ -42,16 +45,16 @@ public class GameState {
     public static GameState nextState(GameState game, InputManager input) {
         game.Player1State.addToCurrentSequence(input.Player1Symbol);
         game.Player2State.addToCurrentSequence(input.Player2Symbol);
-        if (game.CurrSequenceLength() == GameVariables.SEQUENCE_LENGTH) {
+        if (game.CurrSequenceLength() == game.variables.SequenceLength) {
             // Players deal damage to each other
             PlayerState attacker = (game.Player1State.CurrRole == Role.ATTACKER) ? game.Player1State : game.Player2State;
             PlayerState defender = (game.Player1State.CurrRole == Role.DEFENDER) ? game.Player1State : game.Player2State;
             Sequence difference = Sequence.getDifference(attacker.CurrSequence, defender.CurrSequence);
             int damage = 0;
             foreach (Sequence combo in attacker.Combos) {
-                damage += GameVariables.FINISHER_DAMAGE * Sequence.subsequenceOccurences(difference, combo);
+                damage += game.variables.FinisherDamage * Sequence.subsequenceOccurences(difference, combo);
             }
-            damage += difference.Count * GameVariables.NORMAL_DAMAGE;
+            damage += difference.Count * game.variables.NormalDamage;
             defender.Hitpoints -= damage;
 
             // Players switch roles

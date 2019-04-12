@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
     private static int padding = 10; // Padding of elements in pixels(?)
     private static int symbolLength = 100; // Size of symbol edge in pixels(?)
-    private bool gameRunning = false;
+    private bool gameRunning = true;
 
     [Header("Scene UI Elements")]
     [SerializeField]
@@ -16,10 +17,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     public PlayerUI player2;
     public GameObject statusText;
-    public GameObject winCanvas;
-    public GameObject gameCanvas;
-    public GameObject p1WinText;
-    public GameObject p2WinText;
+    public GameObject resumeButton;
 
     [Header("Prefab UI Elements")]
     public GameObject comboPanel;
@@ -33,50 +31,54 @@ public class GameManager : MonoBehaviour {
         public GameObject comboArea;
         public GameObject nextSymbolArea;
         public GameObject currentSequenceArea;
-        public GameObject lastSequenceArea;
         public Symbol LastSymbol {get; set;}
         public GameObject NextSymbol {get; set;}
         public List<GameObject> CurrentSequence {get; set;}
-        public List<GameObject> LastSequence {get; set;}
         public List<List<GameObject>> ComboList {get; set;}
     }
+    [Header("Game Difficulty")]
+    public Difficulty difficulty;
 
     private InputManager input;
     private GameState game;
+    private GameVariables variables;
     private float timer;
 
     void Start() {
+        this.input = new InputManager();
+        this.variables = new GameVariables(this.difficulty);
+        this.game = new GameState(variables);
         initializeUI();
-        input = new InputManager();
-        this.game = new GameState();
         replaceGameState(this.game);
         this.timer = 0;
     }
 
-    public void ToggleGameState() {
-        Debug.Log("game started or paused");
+    public void toggleGameState() {
         this.gameRunning = !this.gameRunning;
     }
+
     void Update() {
+        if (!gameRunning) {
+            return;
+        }
         this.input.getInput();
         this.timer += Time.deltaTime;
         this.placeNextSymbols(this.input);
-        if (this.timer >= GameVariables.TIME_TO_ANSWER) {
+        placeTime(timer);
+        if (this.timer >= variables.TimeToAnswer) {
             this.game = GameState.nextState(this.game, this.input);
             replaceGameState(this.game);
             if (this.game.isWon() != 0) {
-                this.winCanvas.SetActive(true);
                 if (this.game.isWon() == -1) {
-                    this.p1WinText.SetActive(true);
+                    SceneManager.LoadScene("Player1WinScene");
                 } else {
-                    this.p2WinText.SetActive(true);
+                    SceneManager.LoadScene("Player2WinScene");
                 }
-                this.gameCanvas.SetActive(false);
-                this.game = new GameState();
-                this.enabled = false;
             }
             this.input.clear();
             timer = 0;
+            toggleGameState();
+            resumeButton.SetActive(true);
         }
     }
 
@@ -86,13 +88,11 @@ public class GameManager : MonoBehaviour {
         initializeHitpoints(this.player1);
         player1.ComboList = initializeComboList(this.player1);
         player1.CurrentSequence = initializeSequence(this.player1.currentSequenceArea, this.player1.CurrentSequence);
-        player1.LastSequence = initializeSequence(this.player1.lastSequenceArea, this.player1.LastSequence);
         initializeFields(this.player2);
         initializeName(this.player2, "Player 2");
         initializeHitpoints(this.player2);
         player2.ComboList = initializeComboList(this.player2);
         player2.CurrentSequence = initializeSequence(this.player2.currentSequenceArea, this.player2.CurrentSequence);
-        player2.LastSequence = initializeSequence(this.player2.lastSequenceArea, this.player2.LastSequence);
     }
 
     public void placeNextSymbols(InputManager input) {
@@ -111,13 +111,12 @@ public class GameManager : MonoBehaviour {
     }
 
     private void placeTime(float timer) {
-        placeText(this.statusText, "Remaining\nTime\nTo Place:\n" + Mathf.Floor(GameVariables.TIME_TO_ANSWER+1-timer).ToString());
+        placeText(this.statusText, "Remaining\nTime\nTo Place:\n" + Mathf.Floor(this.variables.TimeToAnswer+1-timer).ToString());
     }
 
     private void replaceGameState(GameState state) {
         replaceComboLists(state);
         replaceCurrentSequences(state);
-        replaceLastSequences(state);
         replaceHitpoints(state);
         replaceRole(state);
     }
@@ -130,11 +129,6 @@ public class GameManager : MonoBehaviour {
     private void replaceHitpoints(GameState state) {
         this.player1.hitpointsText = placeText(this.player1.hitpointsText, state.Player1State.Hitpoints.ToString());
         this.player2.hitpointsText = placeText(this.player2.hitpointsText, state.Player2State.Hitpoints.ToString());
-    }
-
-    private void replaceLastSequences(GameState state) {
-        this.player1.LastSequence = replaceLastSequence(state.Player1State.LastSequence, this.player1.LastSequence);
-        this.player2.LastSequence = replaceLastSequence(state.Player2State.LastSequence, this.player2.LastSequence);
     }
 
     private void replaceCurrentSequences(GameState state) {
@@ -188,31 +182,31 @@ public class GameManager : MonoBehaviour {
     private List<List<GameObject>> initializeComboList(PlayerUI player) {
         List<List<GameObject>> comboList = new List<List<GameObject>>();
         RectTransform pTransform = player.comboArea.GetComponent(typeof(RectTransform)) as RectTransform;
-        for (int i = 0; i < GameVariables.NUM_COMBOS; i++) {
+        for (int i = 0; i < this.variables.NumCombos; i++) {
             GameObject comboPanel = GameObject.Instantiate(this.comboPanel, pTransform);
             comboPanel.name = "Combo" + i.ToString();
             RectTransform transform = comboPanel.GetComponent(typeof(RectTransform)) as RectTransform;
-            transform.anchorMin = new Vector2(0.5f, (float)(GameVariables.NUM_COMBOS - i - 1)/GameVariables.NUM_COMBOS);
-            transform.anchorMax = new Vector2(0.5f, 1 - (float)i/GameVariables.NUM_COMBOS);
-            transform.sizeDelta = new Vector2((float)symbolLength * GameVariables.COMBO_LENGTH + (GameVariables.COMBO_LENGTH)*padding,transform.sizeDelta.y);
-            comboList.Add(intitializeSymbols(GameVariables.COMBO_LENGTH, transform));
+            transform.anchorMin = new Vector2(0.5f, (float)(this.variables.NumCombos - i - 1)/this.variables.NumCombos);
+            transform.anchorMax = new Vector2(0.5f, 1 - (float)i/this.variables.NumCombos);
+            transform.sizeDelta = new Vector2((float)symbolLength * this.variables.ComboLength + (this.variables.ComboLength+1)*padding,transform.sizeDelta.y);
+            comboList.Add(intitializeSymbols(this.variables.ComboLength, transform));
         }
         return comboList;
     }
 
     private List<GameObject> initializeSequence(GameObject sequenceArea, List<GameObject> sequence) {
         RectTransform pTransform = sequenceArea.GetComponent(typeof(RectTransform)) as RectTransform;
-        pTransform.sizeDelta = new Vector2((float)symbolLength * GameVariables.SEQUENCE_LENGTH + (GameVariables.SEQUENCE_LENGTH)*padding, pTransform.sizeDelta.y);
-        pTransform.anchoredPosition = new Vector2(-(pTransform.sizeDelta.x / 2), 0);
-        return intitializeSymbols(GameVariables.SEQUENCE_LENGTH, pTransform);
+        pTransform.sizeDelta = new Vector2((float)symbolLength * this.variables.SequenceLength + (this.variables.SequenceLength)*padding, pTransform.sizeDelta.y);
+        pTransform.anchoredPosition = new Vector2(pTransform.sizeDelta.x / 2 + padding, 0);
+        return intitializeSymbols(this.variables.SequenceLength, pTransform);
     }
 
     private static void initializeName(PlayerUI player, string name) {
         player.nameText = placeText(player.nameText, name);
     }
 
-    private static void initializeHitpoints(PlayerUI player) {
-        player.hitpointsText = placeText(player.hitpointsText, GameVariables.INITIAL_HITPOINTS.ToString());
+    private void initializeHitpoints(PlayerUI player) {
+        player.hitpointsText = placeText(player.hitpointsText, this.variables.InitialHitpoints.ToString());
     }
 
     private static GameObject placeText(GameObject container, string s) {
@@ -238,7 +232,6 @@ public class GameManager : MonoBehaviour {
         player.NextSymbol = null;
         player.ComboList = new List<List<GameObject>>();
         player.CurrentSequence = new List<GameObject>();
-        player.LastSequence = null;
     }
 
     private GameObject placeSymbol(RectTransform pTransform, Symbol s) {
