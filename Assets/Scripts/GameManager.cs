@@ -44,13 +44,20 @@ public class GameManager : MonoBehaviour {
     private GameVariables variables;
     private float timer;
 
+    Dictionary<string, Color> roleColors = new Dictionary<string, Color>();
+
+
     void Start() {
         this.input = new InputManager();
         this.variables = new GameVariables(this.difficulty);
         this.game = new GameState(variables);
+        roleColors.Add("ATTACKER", new Color32(255, 52, 52, 128));
+        roleColors.Add("DEFENDER", new Color32(96, 241, 131, 128));
+
         initializeUI();
         replaceGameState(this.game);
         this.timer = 0;
+        
     }
 
     public void toggleGameState() {
@@ -123,7 +130,11 @@ public class GameManager : MonoBehaviour {
 
     private void replaceRole(GameState state) {
         this.player1.roleText = placeText(this.player1.roleText, state.Player1State.CurrRole.ToString());
+        // Debug.Log(state.Player1State.CurrRole.ToString());
+        // Debug.Log(this.player1.comboArea.transform.parent);
+        this.player1.comboArea.transform.parent.GetComponent<Image>().color = roleColors[state.Player1State.CurrRole.ToString()];
         this.player2.roleText = placeText(this.player2.roleText, state.Player2State.CurrRole.ToString());
+        this.player2.comboArea.transform.parent.GetComponent<Image>().color = roleColors[state.Player2State.CurrRole.ToString()];
     }
 
     private void replaceHitpoints(GameState state) {
