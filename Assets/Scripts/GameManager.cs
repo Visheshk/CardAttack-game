@@ -68,24 +68,38 @@ public class GameManager : MonoBehaviour {
         if (!gameRunning) {
             return;
         }
-        this.input.getInput();
-        this.timer += Time.deltaTime;
-        this.placeNextSymbols(this.input);
-        placeTime(timer);
-        if (this.timer >= variables.TimeToAnswer) {
-            this.game = GameState.nextState(this.game, this.input);
-            replaceGameState(this.game);
-            if (this.game.isWon() != 0) {
-                if (this.game.isWon() == -1) {
-                    SceneManager.LoadScene("Player1WinScene");
-                } else {
-                    SceneManager.LoadScene("Player2WinScene");
-                }
+        else if (this.game.isRoundEnd()) {
+            this.timer += Time.deltaTime;
+            if (this.timer >= variables.RoundEndSeq) {
+                this.timer = 0;
+                this.game = GameState.nextAttack(this.game);
+                replaceGameState(this.game);
             }
-            this.input.clear();
-            timer = 0;
-            toggleGameState();
-            resumeButton.SetActive(true);
+        }
+        else {
+            this.input.getInput();
+            this.timer += Time.deltaTime;
+            this.placeNextSymbols(this.input);
+            placeTime(timer);
+            if (this.timer >= variables.TimeToAnswer) {
+                this.game = GameState.nextState(this.game, this.input);
+                // if (this.game.isRoundEnd())
+                replaceGameState(this.game);
+                // if (this.game.isRoundEnd()) {
+
+                // }
+                if (this.game.isWon() != 0) {
+                    if (this.game.isWon() == -1) {
+                        SceneManager.LoadScene("Player1WinScene");
+                    } else {
+                        SceneManager.LoadScene("Player2WinScene");
+                    }
+                }
+                this.input.clear();
+                timer = 0;
+                toggleGameState();
+                resumeButton.SetActive(true);
+            }
         }
     }
 
@@ -178,6 +192,11 @@ public class GameManager : MonoBehaviour {
                 newSymbolObjects.Add(replaceSymbol(symbolObjects[i], Symbol.NONE));
             }
         }
+        foreach (var i in seq.inactiveList) {
+            var thiscol = newSymbolObjects[i].GetComponent<Image>().color;
+            newSymbolObjects[i].GetComponent<Image>().color = new Color(thiscol.r, thiscol.g, thiscol.b, 0.4f);
+        }
+        
         return newSymbolObjects;
     }
 

@@ -12,6 +12,7 @@ public class GameVariables
     public int FinisherDamage {get;} = 3;
     public int NumCombos {get;} = 3;
     public int SymbolTypes {get;} = 3;
+    public float RoundEndSeq {get;} = 0.5f;
     
     public GameVariables(Difficulty difficulty) {
         switch (difficulty) {
