@@ -132,7 +132,11 @@ public class GameManager : MonoBehaviour {
     }
 
     private void placeTime(float timer) {
-        placeText(this.statusText, "Remaining\nTime\nTo Place:\n" + Mathf.Floor(this.variables.TimeToAnswer+1-timer).ToString());
+        float timeLeft = this.variables.TimeToAnswer+1-timer;
+        // Debug.Log(timeLeft);
+        placeText(this.statusText, "Remaining\nTime\nTo Place:\n" + Mathf.Floor(timeLeft).ToString());
+        float timeFrac = 1 - timer/this.variables.TimeToAnswer;
+        this.statusText.transform.parent.GetComponent<Image>().color = new Color(timeFrac,timeFrac,timeFrac);
     }
 
     private void replaceGameState(GameState state) {
